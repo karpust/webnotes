@@ -1,0 +1,23 @@
+[
+  {
+    "pk": 1,
+    "username": "Сема2",
+    "first_name": "Семен",
+    "last_name": "Семенычев",
+    "email": "202sem@mail.ru"
+  },
+  {
+    "pk": 2,
+    "username": "Вася2",
+    "first_name": "",
+    "last_name": "",
+    "email": "111@mail.ru"
+  },
+  {
+    "pk": 3,
+    "username": "Петрос2",
+    "first_name": "Петр",
+    "last_name": "Петров",
+    "email": "1112@mail.ru"
+  }
+]
