@@ -13,8 +13,8 @@ def load_from_json(f_name):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        users = load_from_json('users')
         User.objects.all().delete()
+        users = load_from_json('users')
         for user in users:
             new_user = User(**user)
             new_user.save()
