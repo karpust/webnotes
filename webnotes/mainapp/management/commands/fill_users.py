@@ -15,8 +15,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         users = load_from_json('users')
         User.objects.all().delete()
-        new_user = User(**users)
-        new_user.save()
+        for user in users:
+            new_user = User(**user)
+            new_user.save()
 
         super_user = User.objects.create_superuser(
             'admin', 'djangodrf@mail.ru', 'superdrf')
