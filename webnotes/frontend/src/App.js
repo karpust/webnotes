@@ -15,25 +15,17 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-      // вызывается при монтировании компонента на страницу
-      // для проверки данные захардкодили потом будем брать с back-end
-        const users = [
-            {  // Далее эти данные мы будем получать с back-end, пока заглушки
-                'first_name': 'Фёдор',
-                'last_name': 'Достоевский',
-                'last_login': 1821
-            },
-            {
-                'first_name': 'Александр',
-                'last_name': 'Грин',
-                'last_login': 1880
-            },
-        ]
-        this.setState(  // меняем состояние App, передаем данные users
-            {
-                'users': users
-            }
-        )
+        // вызывается при монтировании компонента на страницу
+        // response.data - данные с back-end - список юзеров
+        axios.get('http://127.0.0.1:8000/api/users/')
+            .then(response => {
+                const users = response.data
+                this.setState(  // меняем состояние App, передаем данные users
+                    {
+                        'users': users
+                    }
+                )
+            }).catch(error => console.log(error))
     }
 
     render()  // отрисовка компонента(пока один тег div)
