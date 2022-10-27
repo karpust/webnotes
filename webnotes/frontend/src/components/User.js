@@ -33,7 +33,7 @@ const UserList = ({users}) => {
                 Last Name
             </th>
             <th>
-                Birthday year
+                Last Login
             </th>
             {users.map((user) => <UserItem user={user}/>)}
         </table>
