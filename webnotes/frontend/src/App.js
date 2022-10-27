@@ -1,25 +1,26 @@
+import React from "react";
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+// класс App наследуем от React.Component
+// компонент App имеет состояние, остальные нет
+class App extends React.Component {
+  constructor(props) {  // в конструктор класса передаём объект props
+    super(props)  // вызываем родительский конструктор
+    this.state = {  // это объект состояния компонента
+      'authors': []  // он хранит массив users кот получим с backend
+    }
 
+    render()  // отрисовка компонента(пока один тег div)
+    {
+      return (
+          <div>
+            Main App
+          </div>
+      )
+    }
+  }
+
+}
+// экспортируем наш компонент для использования в других модулях:
 export default App;
