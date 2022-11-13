@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authapp',
     'mainapp',
     'corsheaders',
+    'todoapp',
 
 ]
 
