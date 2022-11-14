@@ -3,8 +3,11 @@ from authapp.serializers import UserModelSerializer
 from .models import Project, Todo
 
 
-class ProjectModelSerializer(serializers.ModelSerializer):
-    users = serializers.StringRelatedField(many=True)  # M to M
+# class ProjectModelSerializer(serializers.ModelSerializer):
+class ProjectModelSerializer(serializers.HyperlinkedModelSerializer):
+    # users = serializers.StringRelatedField(many=True)
+    # M*M отобразится списком, для сериализации удобно,
+    # но для CRUD нужно будет переопределять методы
 
     class Meta:
         model = Project

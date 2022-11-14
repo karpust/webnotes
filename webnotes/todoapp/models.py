@@ -9,6 +9,9 @@ class Project(models.Model):
     repo_url = models.URLField(verbose_name='link to repository', blank=True)
     users = models.ManyToManyField(User, verbose_name="project participants")  # project participants
 
+    def __str__(self):
+        return f'Project_{self.name}'
+
 
 class Todo(models.Model):
     TODO = 'TD'
@@ -31,3 +34,6 @@ class Todo(models.Model):
     by_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='by_user')
     by_project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='by_project')
     status = models.CharField(verbose_name='note status', max_length=2, choices=STATUS_CHOICES, default=TODO)
+
+    def __str__(self):
+        return f'{self.name}'
