@@ -17,17 +17,17 @@ class AuthorSerializer(serializers.Serializer):
         instance.birthday_year = validated_data.get('birthday_year', instance.birthday_year)
         return instance
 
-    # def validate_birthday_year(self, value):  # в value приходит то что проверяем
-    #     # для валидации по 1 полю создается метод validate_имя_поля
-    #     if value < 5:
-    #         raise serializers.ValidationError('Год рождения не может быть отрицательным')
-    #     return value
+    def validate_birthday_year(self, value):  # в value приходит то что проверяем
+        # для валидации по 1 полю создается метод validate_имя_поля
+        if value < 5:
+            raise serializers.ValidationError('Год рождения не может быть отрицательным')
+        return value
 
-    def validate(self, attrs):
-        # для валидации по неск полям создается метод validate
-        if attrs['name'] == 'Толстой' and attrs['birthday_year'] != 1828:
-            raise serializers.ValidationError('Неверный год рождения Толстого')
-        return attrs
+    # def validate(self, attrs):
+    #     # для валидации по неск полям создается метод validate
+    #     if attrs['name'] == 'Толстой' and attrs['birthday_year'] != 1828:
+    #         raise serializers.ValidationError('Неверный год рождения Толстого')
+    #     return attrs
 
 
 def start():
@@ -58,11 +58,11 @@ def start():
     # print(author)
 
     """ Обновление частичное """
-    # data = {'birthday_year': 1}
-    # serializer = AuthorSerializer(author, data=data, partial=True)  # если обновляем не все поля
-    # serializer.is_valid()  # когда запускается is_valid, запускаются все валидаторы кот есть
-    # author = serializer.save()
-    # print(f'{author} {author.birthday_year}')
+    data = {'birthday_year': 1828}
+    serializer = AuthorSerializer(author, data=data, partial=True)  # если обновляем не все поля
+    serializer.is_valid()  # когда запускается is_valid, запускаются все валидаторы кот есть
+    author = serializer.save()
+    print(f'{author} {author.birthday_year}')
 
     """ Проверка 1го поля """
     # data = {'birthday_year': 1}  # 1 пойдет в value в валидаторе

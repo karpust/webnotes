@@ -5,9 +5,10 @@ from authapp.models import User
 
 
 class Project(models.Model):
-    name = models.CharField(verbose_name='project name', max_length=50,  unique=True)
+    name = models.CharField(verbose_name='project name', max_length=50, unique=True)
     repo_url = models.URLField(verbose_name='link to repository', blank=True)
     users = models.ManyToManyField(User, verbose_name="project participants")  # project participants
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f'Project_{self.name}'
