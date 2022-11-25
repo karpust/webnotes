@@ -48,9 +48,9 @@ class ProjectListApiView(APIView, ProjectLimitOffsetPagination):
         projects = self.get_queryset()
         # paginator = ProjectLimitOffsetPagination() можно так, но отнаследовались
         page = self.paginate_queryset(projects, request)
-        if page:
-            serializer = ProjectModelSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)  # count, next, previous, result on page
+        # if page:
+        #     serializer = ProjectModelSerializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)  # count, next, previous, result on page
         serializer = ProjectModelSerializer(projects, many=True)
         return Response(serializer.data)
 
@@ -140,9 +140,9 @@ def todo_list_api_view(request):
             todos = todos.filter(by_project=project)  # exact
         paginator = TodoLimitOffsetPagination()
         page = paginator.paginate_queryset(todos, request)
-        if page:
-            serializer = TodoModelSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
+        # if page:
+        #     serializer = TodoModelSerializer(page, many=True)
+        #     return paginator.get_paginated_response(serializer.data)
         serializer = TodoModelSerializer(todos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

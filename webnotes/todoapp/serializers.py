@@ -11,7 +11,7 @@ class ProjectModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = '__all__'  # with id
+        fields = ['id', 'name', 'repo_url', 'users', 'is_active']  # if '__all__' - no id
 
 
 class TodoModelSerializer(serializers.ModelSerializer):
@@ -19,6 +19,6 @@ class TodoModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Todo
-        fields = ['name', 'content', 'publication_date', 'by_user', 'by_project', 'status']  # no id
+        fields = ['id', 'name', 'content', 'publication_date', 'by_user', 'by_project', 'status']
 
 
