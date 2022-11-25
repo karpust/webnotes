@@ -5,6 +5,7 @@ import UserList from "./components/User";
 import axios from "axios";
 import ProjectList from "./components/Project";
 import TodoList from "./components/Todo";
+import {HashRouter,Routes,Route,BrowserRouter} from "react-router-dom";
 
 
 // класс App наследуем от React.Component
@@ -52,9 +53,30 @@ class App extends React.Component {
     {
         return (
             <div className="App">
-                <UserList users={this.state.users} />
-                <ProjectList projects={this.state.projects} />
-                <TodoList todos={this.state.todos} />
+
+                {/*в HashRouter поместили компоненты кот будут меняться в зависимости от адреса
+                путь path указывает на компонент(у нас это ф-ция замыкания возвращающая компонент)
+                указанный в component*/}
+                {/*<HashRouter>*/}
+                {/*    <Routes>*/}
+                {/*        <Route exact path='/' component={() => <UserList users={this.state.users}/>}/>*/}
+                {/*        <Route exact path='/projects' component={() => <ProjectList projects={this.state.projects}/>}/>*/}
+                {/*        <Route exact path='/todos' component={() => <TodoList todos={this.state.todos}/>}/>*/}
+                {/*    </Routes>*/}
+                {/*</HashRouter>*/}
+
+                <BrowserRouter>
+                    <Routes>
+                        <Route exact path='/' element={<UserList users={this.state.users}/>}/>
+                        <Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>
+                        <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
+                    </Routes>
+                </BrowserRouter>
+
+                {/*<UserList users={this.state.users} />*/}
+                {/*<ProjectList projects={this.state.projects} />*/}
+                {/*<TodoList todos={this.state.todos} />*/}
+
             </div>
 
         )
