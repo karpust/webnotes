@@ -8,6 +8,7 @@ import TodoList from "./components/Todo";
 import TodosUser from "./components/TodosUser";
 import NotFound404 from "./components/NotFound404";
 import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
+import ProjectDetail from "./components/ProjectDetail";
 
 
 // класс App наследуем от React.Component
@@ -76,11 +77,15 @@ class App extends React.Component {
                             <Route index element={<UserList users={this.state.users}/>}/>
                             <Route path=':userId' element={<TodosUser todos={this.state.todos}/>}/>
                         </Route>
-                        {/*<Route exact path='/users' element={<UserList users={this.state.users}/>}/>*/}
-                        <Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>
+
+                        <Route path='/projects'>
+                            <Route index element={<ProjectList projects={this.state.projects}/>}/>
+                            <Route path=':projectId' element={<ProjectDetail projects={this.state.projects}/>}/>
+                        </Route>
+                        {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
 
-                        {/*если сюда дойдет то страница не существует, и отработает*/}
+                        {/* если сюда дойдет то страница не существует, и отработает: */}
                         <Route path='*' element={<NotFound404/>}/>
                     </Routes>
                 </BrowserRouter>
