@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from "react-router-dom";
 
 // это простой компонент без состояния.
 // т к в каждый компонент передается объект props,
@@ -8,7 +9,10 @@ const UserItem = ({user}) => {
     return (
         <tr>
             <td>{user.id}</td>
-            <td>{user.username}</td>
+            <td>
+                {/* при клике по юзеру перейдем на /users/1 */}
+                <Link to={`/users/${user.id}`}>{user.username}</Link>
+            </td>
             <td>{user.first_name}</td>
             <td>{user.last_name}</td>
             <td>{user.email}</td>

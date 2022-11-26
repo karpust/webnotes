@@ -5,8 +5,9 @@ import UserList from "./components/User";
 import axios from "axios";
 import ProjectList from "./components/Project";
 import TodoList from "./components/Todo";
-import {HashRouter, Routes, Route, BrowserRouter, Link} from "react-router-dom";
+import TodosUser from "./components/TodosUser";
 import NotFound404 from "./components/NotFound404";
+import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
 
 
 // класс App наследуем от React.Component
@@ -69,7 +70,13 @@ class App extends React.Component {
                         </li>
                     </nav>
                     <Routes>
-                        <Route exact path='/' element={<UserList users={this.state.users}/>}/>
+                        {/* если / то попадем на /users  */}
+                        <Route exact path='/' element={<Navigate to='/users'/>}/>
+                        <Route path='/users'>
+                            <Route index element={<UserList users={this.state.users}/>}/>
+                            <Route path=':userId' element={<TodosUser todos={this.state.todos}/>}/>
+                        </Route>
+                        {/*<Route exact path='/users' element={<UserList users={this.state.users}/>}/>*/}
                         <Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
 

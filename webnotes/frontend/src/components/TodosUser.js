@@ -16,11 +16,11 @@ const TodoItem = ({todo}) => {
 }
 
 
-const TodoList = ({todos}) => {
+const TodosUser = ({todos}) => {
     let {userId} = useParams()
     console.log(userId)
     //  получаем заметки юзера:
-    let filter_todos = todos.filter((todo) => todo.users.includes(parseInt(userId)))
+    let filter_todos = todos.filter((todo) => todo.by_user == userId)  //todo.users.includes(parseInt(userId)))
     return (
         <table>
             <thead>
@@ -41,4 +41,4 @@ const TodoList = ({todos}) => {
     )
 }
 
-export default TodoList
+export default TodosUser

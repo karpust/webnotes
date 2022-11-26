@@ -30,7 +30,7 @@ const TodoList = ({todos}) => {
             </tr>
             </thead>
             <tbody>
-            {todos.map((todo) => <TodoItem todo={todo}/>)}
+            {todos.map((todo_) => <TodoItem todo={todo_}/>)}
             </tbody>
         </table>
     )
