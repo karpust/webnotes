@@ -18,6 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from todoapp import views
 from authapp.views import UserListApiView, UserDetailApiView
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 router = DefaultRouter()
@@ -55,5 +56,7 @@ urlpatterns = [
     path('api/projects/', views.ProjectListApiView.as_view()),  # ApiView
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
     path('api/todos/', views.todo_list_api_view),  # @api-view
-    path('api/todos/<int:pk>/', views.todo_detail_api_view),  # @api-view
+    path('api/todos/<int:pk>/', views.TodoDetailApiview.as_view()),  # ApiView
+
+    # path('api-token-auth/', obtain_auth_token),
 ]

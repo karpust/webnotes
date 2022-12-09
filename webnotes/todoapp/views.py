@@ -5,7 +5,7 @@ from .models import Project, Todo
 from .serializers import ProjectModelSerializer, TodoModelSerializer
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
-from rest_framework.decorators import api_view, renderer_classes, action
+from rest_framework.decorators import api_view, renderer_classes, action, permission_classes
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework import mixins
 from .filters import TodoFilter
@@ -16,6 +16,7 @@ from rest_framework.settings import api_settings
 from rest_framework.generics import GenericAPIView
 import django_filters.rest_framework
 from rest_framework.parsers import JSONParser
+from rest_framework import permissions
 
 
 class ProjectLimitOffsetPagination(LimitOffsetPagination):  # not working automatically in APIView class
@@ -66,9 +67,12 @@ class ProjectDetailApiView(APIView):
     """implemented methods: get, put, patch, delete"""
     # renderers из настроек проекта
 
+    def get_queryset(self):
+        return Project.objects.all()
+
     def get_object(self, pk):
         try:
-            return Project.objects.get(pk=pk)
+            return self.get_queryset().get(pk=pk)
         except Project.DoesNotExist:
             raise Http404
 
@@ -116,11 +120,13 @@ class TodoLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 20
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'HEAD'])
 @renderer_classes([JSONRenderer, BrowsableAPIRenderer])  # или из настроек проекта
+# to use DjangoModelPermissionsOrAnonReadOnly i must convert my FBV to CBV or use other type of permissions(AllowAny)
+@permission_classes((permissions.AllowAny,))
 def todo_list_api_view(request):
     """
-    добавить фильтрацию по проекту;
+    фильтрация заметок по id проекта;
     размер страницы 20
     """
     if request.method == 'GET':
@@ -154,31 +160,40 @@ def todo_list_api_view(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def todo_detail_api_view(request, pk=None):
-    if request.method == 'GET':
-        todo = get_object_or_404(Todo, pk=pk)  # Todo.objects.get(pk=pk)
-        serializer = TodoModelSerializer(todo)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# to use DjangoModelPermissionsOrAnonReadOnly i must convert my FBV to CBV
+# thus i will use APIView instead of @api_view:
+class TodoDetailApiview(APIView):
+    def get_queryset(self):
+        return Todo.objects.all()  # добавила get_queryset чтобы работала DjangoModelPermissionsOrAnonReadOnly
 
-    elif request.method == 'PUT':
-        todo = get_object_or_404(Todo, pk=pk)
+    def get_object(self, pk):
+        """get_object_or_404 for class"""
+        try:
+            return self.get_queryset().get(pk=pk)
+        except Todo.DoesNotExsist:
+            raise Http404
+
+    def get(self, request, pk):
+        todo = self.get_object(pk)
+        serializer = TodoModelSerializer(todo)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        todo = self.get_object(pk)
         serializer = TodoModelSerializer(todo, data=request.data)
         if serializer.is_valid():
-            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'PATCH':
-        todo = get_object_or_404(Todo, pk=pk)
+    def patch(self, request, pk):
+        todo = self.get_object(pk)
         serializer = TodoModelSerializer(todo, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        todo = get_object_or_404(Todo, pk=pk)
+    def delete(self, request, pk):
+        todo = self.get_object(pk)
         data = {'status': 'CL'}
         serializer = TodoModelSerializer(todo, data=data, partial=True)
         if serializer.is_valid():

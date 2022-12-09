@@ -7,13 +7,15 @@ from .serializers import UserModelSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 from django.http import Http404
+from todoapp.models import Project
 
 
 # class UserModelViewSet(ModelViewSet):
 #     queryset = User.objects.all()
 #     serializer_class = UserModelSerializer
 
-
+# Cannot apply DjangoModelPermissionsOrAnonReadOnly on a view that
+# does not set `.queryset` or have a `.get_queryset()` method
 class UserListApiView(APIView):
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
     """
@@ -21,11 +23,28 @@ class UserListApiView(APIView):
     http_method_names = ["get","post","put","patch","delete","head","options","trace"]
     """
 
-    @staticmethod
-    def get(request):  # называем как метод http-запроса
+    def get_queryset(self):
+        """
+        + filter users by project id
+        """
+        project = self.request.query_params.get('project')
         users = User.objects.all()
+        if project:
+            users = users.filter(project=project)  # !
+        return users
+
+    def get(self, request):  # называем как метод http-запроса
+        # users = User.objects.all()
+        users = self.get_queryset()
         serializer = UserModelSerializer(users, many=True)
         return Response(serializer.data)
+
+    # def post(self, request):  # а создавать нельзя по условию
+    #     serializer = UserModelSerializer(User, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailApiView(APIView):
@@ -34,11 +53,14 @@ class UserDetailApiView(APIView):
     retrieve, update, partial_update.
     http_method_names = ["get","post","put","patch","delete","head","options","trace"]
     """
-    @staticmethod
-    def get_object(pk):
+
+    def get_queryset(self):  # добавила get_queryset чтобы работала DjangoModelPermissionsOrAnonReadOnly
+        return User.objects.all()
+
+    def get_object(self, pk):
         """get_object_or_404 for class"""
         try:
-            return User.objects.get(pk=pk)
+            return self.get_queryset().get(pk=pk)
         except User.DoesNotExist:
             raise Http404
 
@@ -60,5 +82,15 @@ class UserDetailApiView(APIView):
         serializer = UserModelSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request, pk):  # удалять нельзя по условию
+    #     user = self.get_object(pk)
+    #     data = {'is_active': 0}
+    #     serializer = UserModelSerializer(User, data=data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
