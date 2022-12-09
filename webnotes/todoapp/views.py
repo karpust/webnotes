@@ -119,31 +119,33 @@ class ProjectDetailApiView(APIView):
 class TodoLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 20
 
+# to use DjangoModelPermissionsOrAnonReadOnly i must convert my FBV to CBV
+# thus i will use APIView instead of @api_view:
 
-@api_view(['GET', 'POST', 'HEAD'])
-@renderer_classes([JSONRenderer, BrowsableAPIRenderer])  # или из настроек проекта
-# to use DjangoModelPermissionsOrAnonReadOnly i must convert my FBV to CBV or use other type of permissions(AllowAny)
-@permission_classes((permissions.AllowAny,))
-def todo_list_api_view(request):
+
+class TodoListApiView(APIView):
     """
-    фильтрация заметок по id проекта;
-    размер страницы 20
+    implemented methods: get, post,
+    filter by project, 20 notes per page
     """
-    if request.method == 'GET':
+    def get_queryset(self):
         todos = Todo.objects.all()
-        project = request.query_params.get('project')  # default=None
+        project = self.request.query_params.get('project')  # default=None
         # http://127.0.0.1:8000/api/todos/?project=1
 
-        date_after = request.query_params.get('date_after')
-        date_before = request.query_params.get('date_before')
+        date_after = self.request.query_params.get('date_after')
+        date_before = self.request.query_params.get('date_before')
         # http://127.0.0.1:8000/api/todos/?date_after=2022-11-23 12:00&date_before=2022-11-23 14:00
-
         # http://127.0.0.1:8000/api/todos/?date_after=2022-11-23%2012:00&date_before=2022-11-23%2014:00&project=2
 
         if date_after and date_before:
             todos = todos.filter(publication_date__range=(date_after, date_before))  # range
         if project:
             todos = todos.filter(by_project=project)  # exact
+        return todos
+
+    def get(self, request):
+        todos = self.get_queryset()
         paginator = TodoLimitOffsetPagination()
         page = paginator.paginate_queryset(todos, request)
         # if page:
@@ -152,7 +154,7 @@ def todo_list_api_view(request):
         serializer = TodoModelSerializer(todos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'POST':
+    def post(self, request):
         serializer = TodoModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -162,7 +164,7 @@ def todo_list_api_view(request):
 
 # to use DjangoModelPermissionsOrAnonReadOnly i must convert my FBV to CBV
 # thus i will use APIView instead of @api_view:
-class TodoDetailApiview(APIView):
+class TodoDetailApiView(APIView):
     def get_queryset(self):
         return Todo.objects.all()  # добавила get_queryset чтобы работала DjangoModelPermissionsOrAnonReadOnly
 
@@ -170,7 +172,7 @@ class TodoDetailApiview(APIView):
         """get_object_or_404 for class"""
         try:
             return self.get_queryset().get(pk=pk)
-        except Todo.DoesNotExsist:
+        except Todo.DoesNotExist:
             raise Http404
 
     def get(self, request, pk):

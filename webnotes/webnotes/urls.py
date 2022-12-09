@@ -55,8 +55,8 @@ urlpatterns = [
     path('api/users/<int:pk>/', UserDetailApiView.as_view()),  # ApiView
     path('api/projects/', views.ProjectListApiView.as_view()),  # ApiView
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
-    path('api/todos/', views.todo_list_api_view),  # @api-view
-    path('api/todos/<int:pk>/', views.TodoDetailApiview.as_view()),  # ApiView
+    path('api/todos/', views.TodoListApiView.as_view()),  # ApiView
+    path('api/todos/<int:pk>/', views.TodoDetailApiView.as_view()),  # ApiView
 
     # path('api-token-auth/', obtain_auth_token),
 ]
