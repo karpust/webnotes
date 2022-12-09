@@ -19,6 +19,10 @@ from rest_framework.routers import DefaultRouter
 from todoapp import views
 from authapp.views import UserListApiView, UserDetailApiView
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 router = DefaultRouter()
@@ -57,6 +61,7 @@ urlpatterns = [
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
     path('api/todos/', views.TodoListApiView.as_view()),  # ApiView
     path('api/todos/<int:pk>/', views.TodoDetailApiView.as_view()),  # ApiView
-
-    # path('api-token-auth/', obtain_auth_token),
+    path('api-token-auth/', obtain_auth_token),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # for JWT
+    path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # for JWT
 ]
