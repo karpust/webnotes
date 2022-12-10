@@ -9,6 +9,7 @@ import TodosUser from "./components/TodosUser";
 import NotFound404 from "./components/NotFound404";
 import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
 import ProjectDetail from "./components/ProjectDetail";
+import LoginForm from "./components/Auth";
 
 
 // класс App наследуем от React.Component
@@ -23,8 +24,7 @@ class App extends React.Component {
         }
     }
 
-    componentDidMount() {
-        // вызывается при монтировании компонента на страницу
+    load_data() {
         // response.data - данные с back-end - список юзеров
         axios.get('http://127.0.0.1:8000/api/users/')  // контроллер под users
             .then(response => {
@@ -52,6 +52,11 @@ class App extends React.Component {
             }).catch(error => console.log(error))
     }
 
+    componentDidMount() {
+        // вызывается при монтировании компонента на страницу
+        this.load_data()
+    }
+
     render()  // отрисовка компонента(пока один тег div)
     {
         return (
@@ -69,6 +74,9 @@ class App extends React.Component {
                         <li>
                             <Link to='/todos'>Todos</Link>
                         </li>
+                        <li>
+                            <Link to='/login'>Login</Link>
+                        </li>
                     </nav>
                     <Routes>
                         {/* если / то попадем на /users  */}
@@ -85,7 +93,9 @@ class App extends React.Component {
                         {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
 
-                        {/* если сюда дойдет то страница не существует, и отработает: */}
+                        <Route exact path='/login' element={<LoginForm/>}/>
+
+                        {/* если сюда дойдет то страница не существует - отработает: */}
                         <Route path='*' element={<NotFound404/>}/>
                     </Routes>
                 </BrowserRouter>
