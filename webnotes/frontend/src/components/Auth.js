@@ -17,7 +17,8 @@ class LoginForm extends React.Component {  // класс LoginForm наслед�
     }
 
     handleSubmit(event) {  // метод вызывается при отправке формы, проверяет верный ли логин/пароль
-        console.log(this.state.login + ' ' + this.state.password)
+        // console.log(this.state.login + ' ' + this.state.password)
+        this.props.get_token(this.state.login, this.state.password) // вместо вывода в консоль, вызываем get_token
         event.preventDefault()  // отменит отправку формы т к мы сделаем это сами чз axios
 
     }
@@ -27,8 +28,8 @@ class LoginForm extends React.Component {  // класс LoginForm наслед�
             <form onSubmit={(event) => this.handleSubmit(event)}>
                 <input type="text" name="login" placeholder="login" value={this.state.login}
                        onChange={(event) => this.handleChange(event)}/>
-                <input type="password" name="password" placeholder="password"
-                       value={this.state.password} onChange={(event) => this.handleChange(event)}/>
+                <input type="password" name="password" placeholder="password" value={this.state.password}
+                       onChange={(event) => this.handleChange(event)}/>
                 <input type="submit" value="Login"/>
             </form>
         );

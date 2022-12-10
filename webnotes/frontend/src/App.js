@@ -57,6 +57,14 @@ class App extends React.Component {
         this.load_data()
     }
 
+    get_token(username, password) {  // метод получает токен авторизации
+        // методом post отправляем логин и пароль на адрес(на сервер авторизации):
+        axios.post('http://127.0.0.1:8000/api-token-auth/',
+            {username: username, password: password}).then(response => {
+            console.log(response.data)}).catch(error => alert('Неверный логин или пароль'))
+
+    }
+
     render()  // отрисовка компонента(пока один тег div)
     {
         return (
@@ -93,7 +101,9 @@ class App extends React.Component {
                         {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
 
-                        <Route exact path='/login' element={<LoginForm/>}/>
+                        <Route exact path='/login' element={<LoginForm get_token={(username, password) =>
+                            this.get_token(username, password)}/>}/>
+                        {/*передали get_token в компонент LoginForm чтобы вызвать его после отправки формы*/}
 
                         {/* если сюда дойдет то страница не существует - отработает: */}
                         <Route path='*' element={<NotFound404/>}/>
