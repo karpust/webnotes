@@ -10,6 +10,7 @@ import NotFound404 from "./components/NotFound404";
 import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
 import ProjectDetail from "./components/ProjectDetail";
 import LoginForm from "./components/Auth";
+import Cookies from "universal-cookie";
 
 
 // класс App наследуем от React.Component
@@ -22,6 +23,36 @@ class App extends React.Component {
             'projects': [],
             'todos': []
         }
+    }
+
+    set_token(token) {  // метод принимает токен, помещает его в cookies и записывает в состояние приложения
+        const cookies = new Cookies()
+        cookies.set('token', token)  // установка токена в cookies, для сохранения юзера при закрытии браузера
+        this.setState({'token': token})  // установка токена в состояние, для обновления при авторизации
+    }
+
+    is_authenticated() {  // определяет авторизован ли юзер
+        return this.state.token != ''  // если да - токен не пустой
+    }
+
+    logout() {  // обнуляет токен
+        this.set_token('')
+    }
+
+    get_token_from_storage() {  // метод вызывается при открытии сайта: токен из cookies в состояние
+        const cookies = new Cookies()
+        const token = cookies.get('token')  // берет токен из куков
+        this.setState({'token': token})  // записывает его в состояние
+    }
+
+    get_token(username, password) {  // метод получает токен авторизации
+        // методом post отправляем логин и пароль на адрес(на сервер авторизации):
+        axios.post('http://127.0.0.1:8000/api-token-auth/',
+            {username: username, password: password}).then(response => {
+            // методом set_token сохраняем токен в state и cookies:
+            this.set_token(response.data['token'])
+        }).catch(error => alert('Неверный логин или пароль'))
+
     }
 
     load_data() {
@@ -54,14 +85,8 @@ class App extends React.Component {
 
     componentDidMount() {
         // вызывается при монтировании компонента на страницу
+        this.get_token_from_storage()
         this.load_data()
-    }
-
-    get_token(username, password) {  // метод получает токен авторизации
-        // методом post отправляем логин и пароль на адрес(на сервер авторизации):
-        axios.post('http://127.0.0.1:8000/api-token-auth/',
-            {username: username, password: password}).then(response => {
-            console.log(response.data)}).catch(error => alert('Неверный логин или пароль'))
 
     }
 
@@ -83,7 +108,9 @@ class App extends React.Component {
                             <Link to='/todos'>Todos</Link>
                         </li>
                         <li>
-                            <Link to='/login'>Login</Link>
+                            {this.is_authenticated() ? <button onClick={() => this.logout()}>Logout</button> :
+                                <Link to='/login'>Login</Link>
+                            }
                         </li>
                     </nav>
                     <Routes>
