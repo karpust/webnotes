@@ -21,14 +21,28 @@ class App extends React.Component {
         this.state = {  // это объект состояния компонента
             'users': [],  // хранит массив users кот получим с backend
             'projects': [],
-            'todos': []
+            'todos': [],
+            'token': ''
         }
+    }
+
+    get_headers() {  // метод добавляет токен в заголовки если юзер авторизован
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+        if (this.is_authenticated()) {
+            headers['Authorization'] = 'Token ' + this.state.token
+        }  // словарь headers, ключ Authorization, значение - токен из состояния
+        return headers
     }
 
     set_token(token) {  // метод принимает токен, помещает его в cookies и записывает в состояние приложения
         const cookies = new Cookies()
         cookies.set('token', token)  // установка токена в cookies, для сохранения юзера при закрытии браузера
-        this.setState({'token': token})  // установка токена в состояние, для обновления при авторизации
+        this.setState({'token': token}, () => this.load_data())
+        // установка токена в состояние, для обновления при авторизации
+        // указан callback кот срабатывает сразу после изменения состояния
+        // чтобы данные не грузились раньше изменения состояния this.state.token
     }
 
     is_authenticated() {  // определяет авторизован ли юзер
@@ -42,7 +56,7 @@ class App extends React.Component {
     get_token_from_storage() {  // метод вызывается при открытии сайта: токен из cookies в состояние
         const cookies = new Cookies()
         const token = cookies.get('token')  // берет токен из куков
-        this.setState({'token': token})  // записывает его в состояние
+        this.setState({'token': token}, () => this.load_data())
     }
 
     get_token(username, password) {  // метод получает токен авторизации
@@ -51,42 +65,50 @@ class App extends React.Component {
             {username: username, password: password}).then(response => {
             // методом set_token сохраняем токен в state и cookies:
             this.set_token(response.data['token'])
+            // console.log(response.data)
         }).catch(error => alert('Неверный логин или пароль'))
-
     }
 
     load_data() {
+        const headers = this.get_headers()  // передаем заголовки в каждый запрос:
         // response.data - данные с back-end - список юзеров
-        axios.get('http://127.0.0.1:8000/api/users/')  // контроллер под users
+        axios.get('http://127.0.0.1:8000/api/users/', {headers})  // контроллер под users
             .then(response => {
-                const users = response.data
                 this.setState(  // меняем состояние App, передаем данные users
                     {
-                        'users': users
+                        'users': response.data
                     })
             }).catch(error => console.log(error))
 
-        axios.get('http://127.0.0.1:8000/api/projects/')  // контроллер под projects
+
+        axios.get('http://127.0.0.1:8000/api/projects/', {headers})  // контроллер под projects
             .then(response => {
                 this.setState(  // меняем состояние App, передаем данные projects
                     {
                         'projects': response.data
                     })
-            }).catch(error => console.log(error))
+                // console.log(this.state)
+            }).catch(error => {
+                console.log(error)
+            this.setState({projects: []})  // после logout - обнуляем
+        })
 
-        axios.get('http://127.0.0.1:8000/api/todos/')  // контроллер под todos
+
+        axios.get('http://127.0.0.1:8000/api/todos/', {headers})  // контроллер под todos
             .then(response => {
                 this.setState(  // меняем состояние App, передаем данные projects
                     {
                         'todos': response.data
                     })
-            }).catch(error => console.log(error))
+            }).catch(error => {
+                console.log(error)
+            this.setState({todos: []})  // после logout - обнуляем
+        })
     }
 
     componentDidMount() {
         // вызывается при монтировании компонента на страницу
         this.get_token_from_storage()
-        this.load_data()
 
     }
 

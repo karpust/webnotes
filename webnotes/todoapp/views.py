@@ -32,6 +32,7 @@ class ProjectLimitOffsetPagination(LimitOffsetPagination):  # not working automa
 
 class ProjectListApiView(APIView, ProjectLimitOffsetPagination):
     """implemented methods: get, post"""
+    permission_classes = [permissions.IsAuthenticated]
     # renderers из настроек проекта
     # template = None # 'rest_framework/pagination/previous_and_next.html'   'rest_framework/pagination/numbers.html'
     # renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
@@ -124,6 +125,7 @@ class TodoLimitOffsetPagination(LimitOffsetPagination):
 
 
 class TodoListApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     """
     implemented methods: get, post,
     filter by project, 20 notes per page

@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 from django.http import Http404
 from todoapp.models import Project
-
+from rest_framework import permissions
 
 # class UserModelViewSet(ModelViewSet):
 #     queryset = User.objects.all()
@@ -18,6 +18,7 @@ from todoapp.models import Project
 # does not set `.queryset` or have a `.get_queryset()` method
 class UserListApiView(APIView):
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
+    permission_classes = [permissions.AllowAny]
     """
     only get
     http_method_names = ["get","post","put","patch","delete","head","options","trace"]
