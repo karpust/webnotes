@@ -18,7 +18,8 @@ from rest_framework import permissions
 # does not set `.queryset` or have a `.get_queryset()` method
 class UserListApiView(APIView):
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     """
     only get
     http_method_names = ["get","post","put","patch","delete","head","options","trace"]

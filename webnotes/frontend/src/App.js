@@ -31,41 +31,46 @@ class App extends React.Component {
             'Content-Type': 'application/json'
         }
         if (this.is_authenticated()) {
-            headers['Authorization'] = 'Token ' + this.state.token
+            headers['Authorization'] = 'Bearer ' + this.state.access
         }  // словарь headers, ключ Authorization, значение - токен из состояния
         return headers
     }
 
     set_token(token) {  // метод принимает токен, помещает его в cookies и записывает в состояние приложения
         const cookies = new Cookies()
-        cookies.set('token', token)  // установка токена в cookies, для сохранения юзера при закрытии браузера
-        this.setState({'token': token}, () => this.load_data())
+        cookies.set('access', token)  // установка токена в cookies, для сохранения юзера при закрытии браузера
+        this.setState({'access': token}, () => this.load_data())
         // установка токена в состояние, для обновления при авторизации
         // указан callback кот срабатывает сразу после изменения состояния
         // чтобы данные не грузились раньше изменения состояния this.state.token
+
+        // localStorage.setItem('token', token)  //  так сохранять токен в localStorage
     }
 
     is_authenticated() {  // определяет авторизован ли юзер
-        return this.state.token != ''  // если да - токен не пустой
+        return this.state.access != ''  // если да - токен не пустой
     }
 
-    logout() {  // обнуляет токен
+    logout() {  // обнуляет токен, проекты и заметки
         this.set_token('')
+        this.setState({todos: []})
+        this.setState({projects: []})
+        this.setState({users: []})
     }
 
     get_token_from_storage() {  // метод вызывается при открытии сайта: токен из cookies в состояние
         const cookies = new Cookies()
-        const token = cookies.get('token')  // берет токен из куков
-        this.setState({'token': token}, () => this.load_data())
+        const token = cookies.get('access')  // берет токен из куков
+        this.setState({'access': token}, () => this.load_data())
     }
 
     get_token(username, password) {  // метод получает токен авторизации
         // методом post отправляем логин и пароль на адрес(на сервер авторизации):
-        axios.post('http://127.0.0.1:8000/api-token-auth/',
+        axios.post('http://127.0.0.1:8000/api/token/',
             {username: username, password: password}).then(response => {
             // методом set_token сохраняем токен в state и cookies:
-            this.set_token(response.data['token'])
-            // console.log(response.data)
+            this.set_token(response.data['access'])
+            console.log(response.data)
         }).catch(error => alert('Неверный логин или пароль'))
     }
 
@@ -88,10 +93,7 @@ class App extends React.Component {
                         'projects': response.data
                     })
                 // console.log(this.state)
-            }).catch(error => {
-                console.log(error)
-            this.setState({projects: []})  // после logout - обнуляем
-        })
+            }).catch(error => console.log(error))
 
 
         axios.get('http://127.0.0.1:8000/api/todos/', {headers})  // контроллер под todos
@@ -100,16 +102,12 @@ class App extends React.Component {
                     {
                         'todos': response.data
                     })
-            }).catch(error => {
-                console.log(error)
-            this.setState({todos: []})  // после logout - обнуляем
-        })
+            }).catch(error => console.log(error))
     }
 
     componentDidMount() {
         // вызывается при монтировании компонента на страницу
         this.get_token_from_storage()
-
     }
 
     render()  // отрисовка компонента(пока один тег div)
@@ -119,6 +117,7 @@ class App extends React.Component {
                 <BrowserRouter>
                     {/*nav>li*3>link*/}
                     <nav>
+                        <ul>{this.is_authenticated() ? <p>не гость</p>: <p>Гость</p>}</ul>
                         <li>
                             {/*Link - компонент как тэг <a> но не передает запрос на сервер */}
                             <Link to='/'>Users</Link>
@@ -130,8 +129,8 @@ class App extends React.Component {
                             <Link to='/todos'>Todos</Link>
                         </li>
                         <li>
-                            {this.is_authenticated() ? <button onClick={() => this.logout()}>Logout</button> :
-                                <Link to='/login'>Login</Link>
+                            {this.is_authenticated() ? <button onClick={() => this.logout()}>Выйти</button> :
+                                <Link to='/login'>Войти</Link>
                             }
                         </li>
                     </nav>

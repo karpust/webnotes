@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'todoapp',
     'django_filters',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
 
 ]
 

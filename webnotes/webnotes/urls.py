@@ -61,7 +61,8 @@ urlpatterns = [
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
     path('api/todos/', views.TodoListApiView.as_view()),  # ApiView
     path('api/todos/<int:pk>/', views.TodoDetailApiView.as_view()),  # ApiView
-    path('api-token-auth/', obtain_auth_token),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # for JWT
-    path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # for JWT
+    path('api-token-auth/', obtain_auth_token),  # авторизация по токену
+    # авторизация по JWT-токену:
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT: создание токена
+    path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT: обновление токена
 ]
