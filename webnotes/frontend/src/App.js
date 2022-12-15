@@ -14,69 +14,56 @@ import Cookies from "universal-cookie";
 
 
 // класс App наследуем от React.Component
-// компонент App имеет состояние, остальные нет
 class App extends React.Component {
     constructor(props) {  // в конструктор класса передаём объект props
         super(props);  // вызываем родительский конструктор
         this.state = {  // это объект состояния компонента
-            'users': [],  // хранит массив users кот получим с backend
-            'projects': [],
-            'todos': [],
-            'token': ''
+            users: [],  // хранит массив users кот получим с backend
+            projects: [],
+            todos: [],
+            auth: {username: '', is_login: false}
         }
     }
 
-    get_headers() {  // метод добавляет токен в заголовки если юзер авторизован
-        let headers = {
-            'Content-Type': 'application/json'
-        }
-        if (this.is_authenticated()) {
-            headers['Authorization'] = 'Bearer ' + this.state.access
-        }  // словарь headers, ключ Authorization, значение - токен из состояния
-        return headers
-    }
-
-    set_token(token) {  // метод принимает токен, помещает его в cookies и записывает в состояние приложения
-        const cookies = new Cookies()
-        cookies.set('access', token)  // установка токена в cookies, для сохранения юзера при закрытии браузера
-        this.setState({'access': token}, () => this.load_data())
-        // установка токена в состояние, для обновления при авторизации
-        // указан callback кот срабатывает сразу после изменения состояния
-        // чтобы данные не грузились раньше изменения состояния this.state.token
-
-        // localStorage.setItem('token', token)  //  так сохранять токен в localStorage
-    }
-
-    is_authenticated() {  // определяет авторизован ли юзер
-        return this.state.access != ''  // если да - токен не пустой
-    }
-
-    logout() {  // обнуляет токен, проекты и заметки
-        this.set_token('')
-        this.setState({todos: []})
-        this.setState({projects: []})
-        this.setState({users: []})
-    }
-
-    get_token_from_storage() {  // метод вызывается при открытии сайта: токен из cookies в состояние
-        const cookies = new Cookies()
-        const token = cookies.get('access')  // берет токен из куков
-        this.setState({'access': token}, () => this.load_data())
-    }
-
-    get_token(username, password) {  // метод получает токен авторизации
-        // методом post отправляем логин и пароль на адрес(на сервер авторизации):
+    login(username, password) {
         axios.post('http://127.0.0.1:8000/api/token/',
             {username: username, password: password}).then(response => {
-            // методом set_token сохраняем токен в state и cookies:
-            this.set_token(response.data['access'])
-            console.log(response.data)
-        }).catch(error => alert('Неверный логин или пароль'))
+            // сохраняем в cookies:
+            const cookies = new Cookies()
+            cookies.set('access', response.data.access)  // response.data - данные с back-end
+            cookies.set('refresh', response.data.refresh)  // оба токена будем хранить в cookies
+            localStorage.setItem('login', username)  // а имя юзера в localStorage
+            // сохраняем юзера в состояние(чтобы потом отобразить имя) и флаг:
+            this.setState({auth: {username: username, is_login: true}}, () => this.load_data())
+        }).catch(error => {
+            error.response.status === 401 ? alert('Неверный логин или пароль') : console.log(error)
+        })
+
+    }
+
+    logout() {  // обнуляем все:
+        this.setState({
+            auth: {username: '', is_login: false},
+            users: [],
+            todos: [],
+            projects: []
+        }, () => this.load_data())
+        const cookies = new Cookies()
+        cookies.set('access', '')
+        cookies.set('refresh', '')
+        localStorage.setItem('login', '')
     }
 
     load_data() {
-        const headers = this.get_headers()  // передаем заголовки в каждый запрос:
-        // response.data - данные с back-end - список юзеров
+        const cookies = new Cookies()
+        const headers = {'Content-Type': 'application/json'}
+        // если юзер залогинился, добавляем access-токен в заголовки:
+        if (this.state.auth.is_login) {
+            const token = cookies.get('access')
+            headers['Authorization'] = 'Bearer ' + token
+        }
+
+        // передаем заголовки в каждый запрос:
         axios.get('http://127.0.0.1:8000/api/users/', {headers})  // контроллер под users
             .then(response => {
                 this.setState(  // меняем состояние App, передаем данные users
@@ -107,8 +94,12 @@ class App extends React.Component {
 
     componentDidMount() {
         // вызывается при монтировании компонента на страницу
-        this.get_token_from_storage()
+        const username = localStorage.getItem('login')
+        if (username !== '') {
+            this.setState({auth: {username: username, is_login: true}}, () => this.load_data())
+        }
     }
+
 
     render()  // отрисовка компонента(пока один тег div)
     {
@@ -117,7 +108,7 @@ class App extends React.Component {
                 <BrowserRouter>
                     {/*nav>li*3>link*/}
                     <nav>
-                        <ul>{this.is_authenticated() ? <p>не гость</p>: <p>Гость</p>}</ul>
+                        <ul>{this.state.auth.username}</ul>
                         <li>
                             {/*Link - компонент как тэг <a> но не передает запрос на сервер */}
                             <Link to='/'>Users</Link>
@@ -129,7 +120,7 @@ class App extends React.Component {
                             <Link to='/todos'>Todos</Link>
                         </li>
                         <li>
-                            {this.is_authenticated() ? <button onClick={() => this.logout()}>Выйти</button> :
+                            {this.state.auth.is_login ? <button onClick={() => this.logout()}>Выйти</button> :
                                 <Link to='/login'>Войти</Link>
                             }
                         </li>
@@ -149,8 +140,8 @@ class App extends React.Component {
                         {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
 
-                        <Route exact path='/login' element={<LoginForm get_token={(username, password) =>
-                            this.get_token(username, password)}/>}/>
+                        <Route exact path='/login' element={<LoginForm login={(username, password) =>
+                            this.login(username, password)}/>}/>
                         {/*передали get_token в компонент LoginForm чтобы вызвать его после отправки формы*/}
 
                         {/* если сюда дойдет то страница не существует - отработает: */}

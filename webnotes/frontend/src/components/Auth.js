@@ -17,8 +17,7 @@ class LoginForm extends React.Component {  // класс LoginForm наслед�
     }
 
     handleSubmit(event) {  // метод вызывается при отправке формы, проверяет верный ли логин/пароль
-        // console.log(this.state.login + ' ' + this.state.password)
-        this.props.get_token(this.state.login, this.state.password) // вместо вывода в консоль, вызываем get_token
+        this.props.login(this.state.login, this.state.password)
         event.preventDefault()  // отменит отправку формы т к мы сделаем это сами чз axios
 
     }
