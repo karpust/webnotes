@@ -14,16 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from todoapp import views
 from authapp.views import UserListApiView, UserDetailApiView
+from userapp.views import UserListAPIViewGen
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-
 
 router = DefaultRouter()
 # router.register('users', views.UserModelViewSet)
@@ -65,4 +65,8 @@ urlpatterns = [
     # авторизация по JWT-токену:
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT: создание токена
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT: обновление токена
+    re_path(r'^api/(?P<version>\d.\d)/users/$', UserListAPIViewGen.as_view()),
+    # UrlPathVersioning: http://127.0.0.1:8000/api/0.2/users/
+    path('api/users/0.1', include('userapp.urls', namespace='0.1')),  # NamespaceVersioning
+    path('api/users/0.2', include('userapp.urls', namespace='0.2')),  # NamespaceVersioning
 ]

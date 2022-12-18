@@ -64,7 +64,8 @@ class TestProjectAPIView(TestCase):
     #     client = APIClient(SERVER_NAME='localhost')  # or allow_hosts in settings
     #     User.objects.create_superuser('admin2', 'admin@admin.com', 'admin123456')
     #     client.login(username='admin2', password='admin123456')
-    #     response = client.put(path=f'/api/todos/{todo.id}/', data={"name": "note_444"})  # {"name":["note_444"]}
+    #     response = client.put(path=f'/api/todos/{todo.id}/', data={"name": "note_444"})
+    # {"name":["note_444"]} сериалайзер не проходит валидацию с такими данными
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -94,6 +95,7 @@ class TestTodoApiView(APITestCase):
     #     User.objects.create_superuser('admin2', 'admin@admin.com', 'admin123456')
     #     # print(User.objects.get(username='admin2').id)
     #     self.client.login(username='admin2', password='admin123456')
-    #     response = self.client.put(path=f'/api/todos/{todo.id}/', data={"name": "note_444"})  # {"name":["note_444"]}
+    #     response = self.client.put(path=f'/api/todos/{todo.id}/', data={"name": "note_444"})
+    # {"name":["note_444"]} сериалайзер не проходит валидацию с такими данными
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
