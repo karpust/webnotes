@@ -25,6 +25,32 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from drf_yasg.views import get_schema_view as get_schema_view_1
+from drf_yasg import openapi
+from rest_framework import permissions
+from django.views.generic import TemplateView
+from rest_framework.schemas import get_schema_view as get_schema_view_2
+
+schema_view_1 = get_schema_view_1(  # drf_yasg: схема по которой сгенерится дока (OpenAPI-спецификация)
+    openapi.Info(
+        title='Webnotes',
+        default_version='1.0',
+        description='Documentation for project',
+        contact=openapi.Contact(email='1@mail.ru'),
+        license=openapi.License(name='MIT License'),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],  # права на документацию
+)
+
+# schema_view = get_schema_view_2(
+#     title='Webnotes',
+#     description='Documentation for project',
+#     version='1.0',
+#     url='http://127.0.0.1:8000/api/',
+#     urlconf='webnotes/urls.py',
+# )
+
 
 router = DefaultRouter()
 # router.register('users', views.UserModelViewSet)
@@ -57,7 +83,8 @@ urlpatterns = [
     # path('filters/', include(filter_router.urls)),  # filters 3
 
     # path('api/users/', UserListApiView.as_view()),  # ApiView
-    path('api/users/', mainapp.UserListAPIViewGen.as_view()),  # QueryParameterVersioning: http://127.0.0.1:8000/api/users/?version=2.0
+    path('api/users/', mainapp.UserListAPIViewGen.as_view()),
+    # QueryParameterVersioning: http://127.0.0.1:8000/api/users/?version=2.0
     path('api/users/<int:pk>/', UserDetailApiView.as_view()),  # ApiView
     path('api/projects/', views.ProjectListApiView.as_view()),  # ApiView
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
@@ -71,4 +98,33 @@ urlpatterns = [
     # UrlPathVersioning: http://127.0.0.1:8000/api/0.2/users/
     # path('api/users/0.1', include('userapp.urls', namespace='0.1')),  # NamespaceVersioning
     # path('api/users/0.2', include('userapp.urls', namespace='0.2')),  # NamespaceVersioning
+
+    # schema from drf_yasg: http://127.0.0.1:8000/swagger.json, http://127.0.0.1:8000/swagger.yaml:
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view_1.without_ui(cache_timeout=0), name='schema-json'),
+    # schema from drf_yasg: http://127.0.0.1:8000/swagger/ :
+    re_path(r'^swagger/$', schema_view_1.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    # schema from drf_yasg: http://127.0.0.1:8000/redoc/ :
+    re_path(r'^redoc/$', schema_view_1.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    path('openapi', get_schema_view_2(  # openapi-schema
+        title='Webnotes',
+        description='Documentation for project',
+        version='1.0',
+        url='http://127.0.0.1:8000/api/',
+    ), name='openapi-schema'),
+
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={
+            'schema_url': 'openapi-schema'
+        }),
+         name='swagger-ui'),
+
+    path('redoc-ui/', TemplateView.as_view(
+        template_name='redoc.html',
+        extra_context={
+            'schema_url': 'openapi-schema'
+        }),
+         name='redoc'),
+
 ]
