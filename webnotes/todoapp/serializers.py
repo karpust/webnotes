@@ -22,8 +22,10 @@ class TodoModelSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'content', 'publication_date', 'by_user', 'by_project', 'status']
 
 
-# class TodoModelSerializerBase(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Todo
-#         fields = '__all__'
+class TodoModelSerializerStaffInfo(serializers.ModelSerializer):
+    by_user = UserModelSerializer()
+
+    class Meta:
+        model = Todo
+        fields = ['id', 'name', 'content', 'publication_date', 'by_user', 'by_project', 'status']
+

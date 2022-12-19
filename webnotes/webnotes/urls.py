@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
+from mainapp import views as mainapp
 from todoapp import views
 from authapp.views import UserListApiView, UserDetailApiView
 from userapp.views import UserListAPIViewGen
@@ -55,7 +56,8 @@ urlpatterns = [
     # path('filters/kwargs/<str:name>/', views.TodoKwargsFilterView.as_view())  # filters 2
     # path('filters/', include(filter_router.urls)),  # filters 3
 
-    path('api/users/', UserListApiView.as_view()),  # ApiView
+    # path('api/users/', UserListApiView.as_view()),  # ApiView
+    path('api/users/', mainapp.UserListAPIViewGen.as_view()),  # QueryParameterVersioning: http://127.0.0.1:8000/api/users/?version=2.0
     path('api/users/<int:pk>/', UserDetailApiView.as_view()),  # ApiView
     path('api/projects/', views.ProjectListApiView.as_view()),  # ApiView
     path('api/projects/<int:pk>/', views.ProjectDetailApiView.as_view()),  # ApiView
@@ -65,8 +67,8 @@ urlpatterns = [
     # авторизация по JWT-токену:
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT: создание токена
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # JWT: обновление токена
-    re_path(r'^api/(?P<version>\d.\d)/users/$', UserListAPIViewGen.as_view()),
+    # re_path(r'^api/(?P<version>\d.\d)/users/$', UserListAPIViewGen.as_view()),
     # UrlPathVersioning: http://127.0.0.1:8000/api/0.2/users/
-    path('api/users/0.1', include('userapp.urls', namespace='0.1')),  # NamespaceVersioning
-    path('api/users/0.2', include('userapp.urls', namespace='0.2')),  # NamespaceVersioning
+    # path('api/users/0.1', include('userapp.urls', namespace='0.1')),  # NamespaceVersioning
+    # path('api/users/0.2', include('userapp.urls', namespace='0.2')),  # NamespaceVersioning
 ]

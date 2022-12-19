@@ -1,5 +1,6 @@
 from rest_framework import generics
 from authapp.models import User
+from authapp.serializers import UserModelSerializer, UserSerializerStaffInfo
 from .serializers import UserSerializer, UserSerializerWithFullName
 
 
