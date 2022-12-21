@@ -47,8 +47,13 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
     'drf_yasg',
+    'graphene_django',
 
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'webnotes.schema.schema'  # путь до схемы
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

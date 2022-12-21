@@ -30,6 +30,8 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view as get_schema_view_2
+from graphene_django.views import GraphQLView
+
 
 schema_view_1 = get_schema_view_1(  # drf_yasg: схема по которой сгенерится дока (OpenAPI-спецификация)
     openapi.Info(
@@ -126,5 +128,8 @@ urlpatterns = [
             'schema_url': 'openapi-schema'
         }),
          name='redoc'),
+
+    path('graphql/', GraphQLView.as_view(graphiql=True)),  # graphpl=True - показывать web-интерфейс
+
 
 ]
