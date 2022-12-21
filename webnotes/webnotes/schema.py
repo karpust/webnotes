@@ -32,6 +32,9 @@ class Query(graphene.ObjectType):
     # для запроса с параметром:
     project_by_id = graphene.Field(ProjectType, id=graphene.Int(required=True))
 
+    # параметр для фильтрации:
+    todos_by_user_name = graphene.List(TodoType, name=graphene.String(required=False))
+
     def resolve_all_todos(root, info):  # self
         return Todo.objects.all()
 
@@ -47,6 +50,13 @@ class Query(graphene.ObjectType):
             return Project.objects.get(id=id)
         except Project.DoesNotExist:
             return
+
+    def resolve_todos_by_user_name(self, info, name=None):
+        # для фильтрации по имени юзера: {todosByUserName(name: "vasia") {name}}
+        todos = Todo.objects.all()
+        if name:
+            todos = Todo.objects.filter(by_user__username=name)
+        return todos
 
 
 schema = graphene.Schema(query=Query)  # создали схему данных
@@ -67,3 +77,4 @@ schema = graphene.Schema(query=Query)  # создали схему данных
 
 # запрос с параметром: {projectById(id: 3) {id,  name}}
 
+# {todosByUserName(name: "vasia") {name}}
