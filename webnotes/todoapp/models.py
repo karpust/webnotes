@@ -32,8 +32,8 @@ class Todo(models.Model):
     name = models.CharField(verbose_name='note title', max_length=50, blank=True)
     content = models.TextField(verbose_name='note content')
     publication_date = models.DateTimeField(auto_now=True)  # when updated
-    by_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='by_user')
-    by_project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='by_project')
+    by_user = models.ForeignKey(User, on_delete=models.CASCADE)  # related_name='by_user'
+    by_project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='todos_by_project')  # related_name='by_project'
     status = models.CharField(verbose_name='note status', max_length=2, choices=STATUS_CHOICES, default=TODO)
 
     def __str__(self):
