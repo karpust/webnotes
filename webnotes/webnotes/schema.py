@@ -59,7 +59,33 @@ class Query(graphene.ObjectType):
         return todos
 
 
-schema = graphene.Schema(query=Query)  # создали схему данных
+class ProjectMutation(graphene.Mutation):
+    class Arguments:
+        # здесь указываем параметры мутации,
+        # определяем типы полей:
+        name = graphene.String(required=True)
+        id = graphene.ID()
+
+    project = graphene.Field(ProjectType)
+
+    @classmethod
+    def mutate(cls, root, info, name, id):
+        # логика мутации:
+        project = Project.objects.get(pk=id)
+        project.name = name
+        project.save()
+        return ProjectMutation(project=project)
+
+
+class Mutation(graphene.ObjectType):
+    update_project = ProjectMutation.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)  # создали схему данных c мутацией
+# запрос на мутацию: {updateProject(name: "ABCDFProjectCOOL", id: 1) {project {id,name}}}
+
+
+# schema = graphene.Schema(query=Query)  # создали схему данных
 
 # GraphQL-запрос: {allTodos {name, id, byUser{username}, byProject{name}}}
 # all from snake_case to CamelCase!
@@ -78,3 +104,5 @@ schema = graphene.Schema(query=Query)  # создали схему данных
 # запрос с параметром: {projectById(id: 3) {id,  name}}
 
 # {todosByUserName(name: "vasia") {name}}
+
+# mutation updateProject {updateProject(name: "ABCDFProjectCOOL", id: 1) {project {id,name}}}
