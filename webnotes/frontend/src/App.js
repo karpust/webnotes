@@ -1,16 +1,17 @@
 import React from "react";
 // import logo from './logo.svg';
 import './App.css';
-import UserList from "./components/User";
 import axios from "axios";
+import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
+import Cookies from "universal-cookie";
+import TodoForm from "./components/TodoForm";
+import UserList from "./components/User";
 import ProjectList from "./components/Project";
 import TodoList from "./components/Todo";
 import TodosUser from "./components/TodosUser";
 import NotFound404 from "./components/NotFound404";
-import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
 import ProjectDetail from "./components/ProjectDetail";
 import LoginForm from "./components/Auth";
-import Cookies from "universal-cookie";
 
 
 // класс App наследуем от React.Component
@@ -177,10 +178,11 @@ class App extends React.Component {
                             }/>
                             <Route path=':projectId' element={<ProjectDetail projects={this.state.projects}/>}/>
                         </Route>
-                        {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
+
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos} deleteTodo={
                             (id) => this.deleteTodo(id)}/>
                         }/>
+                        <Route exact path='/todos/create' element={<TodoForm/>}/>
 
                         <Route exact path='/login' element={<LoginForm login={(username, password) =>
                             this.login(username, password)}/>}/>

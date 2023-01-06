@@ -1,4 +1,6 @@
 import React from 'react';
+import {Link} from "react-router-dom";
+
 
 const TodoItem = ({todo, deleteTodo}) => {
     return (
@@ -20,7 +22,8 @@ const TodoItem = ({todo, deleteTodo}) => {
 
 const TodoList = ({todos, deleteTodo}) => {  // метод тоже передаем
     return (
-        <table>
+        <div>
+            <table>
             <thead>
             <tr>
                 <th>ID</th>
@@ -37,6 +40,9 @@ const TodoList = ({todos, deleteTodo}) => {  // метод тоже переда
             {todos.map((todo_) => <TodoItem todo={todo_} deleteTodo={deleteTodo}/>)}
             </tbody>
         </table>
+            <Link to='/todos/create'>Create</Link>
+        </div>
+
     )
 }
 
