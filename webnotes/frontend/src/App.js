@@ -54,7 +54,7 @@ class App extends React.Component {
         localStorage.setItem('login', '')
     }
 
-    load_data() {
+    get_headers() {
         const cookies = new Cookies()
         const headers = {'Content-Type': 'application/json'}
         // если юзер залогинился, добавляем access-токен в заголовки:
@@ -62,6 +62,44 @@ class App extends React.Component {
             const token = cookies.get('access')
             headers['Authorization'] = 'Bearer ' + token
         }
+        return headers
+    }
+
+
+    deleteTodo(id) {
+        const headers = this.get_headers()
+        axios.delete(`http://127.0.0.1:8000/api/todos/${id}`, {headers})
+            .then(() => {
+                // в состояние записываем все кроме удаленной:
+                // this.setState({todos: this.state.todos.filter((item) => item.id !== id)})
+                // }).catch(error => console.log(error))
+                this.load_data()
+            }).catch(error => {
+            console.log(error)
+            this.setState({todos: []})  // если ошибка то список пустой
+        })
+    }
+
+    deleteProject(id) {
+        const headers = this.get_headers()
+        axios.delete(`http://127.0.0.1:8000/api/projects/${id}`, {headers})
+            .then(() => {
+                this.load_data()
+            }).catch(error => {
+            console.log(error)
+            this.setState({projects: []})
+        })
+    }
+
+    load_data() {
+        // const cookies = new Cookies()
+        // const headers = {'Content-Type': 'application/json'}
+        // // если юзер залогинился, добавляем access-токен в заголовки:
+        // if (this.state.auth.is_login) {
+        //     const token = cookies.get('access')
+        //     headers['Authorization'] = 'Bearer ' + token
+        // }
+        const headers = this.get_headers()
 
         // передаем заголовки в каждый запрос:
         axios.get('http://127.0.0.1:8000/api/users/', {headers})  // контроллер под users
@@ -134,11 +172,15 @@ class App extends React.Component {
                         </Route>
 
                         <Route path='/projects'>
-                            <Route index element={<ProjectList projects={this.state.projects}/>}/>
+                            <Route index element={<ProjectList projects={this.state.projects} deleteProject={
+                                (id) => this.deleteProject(id)}/>
+                            }/>
                             <Route path=':projectId' element={<ProjectDetail projects={this.state.projects}/>}/>
                         </Route>
                         {/*<Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>*/}
-                        <Route exact path='/todos' element={<TodoList todos={this.state.todos}/>}/>
+                        <Route exact path='/todos' element={<TodoList todos={this.state.todos} deleteTodo={
+                            (id) => this.deleteTodo(id)}/>
+                        }/>
 
                         <Route exact path='/login' element={<LoginForm login={(username, password) =>
                             this.login(username, password)}/>}/>

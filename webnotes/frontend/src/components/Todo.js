@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TodoItem = ({todo}) => {
+const TodoItem = ({todo, deleteTodo}) => {
     return (
         <tr>
             <td>{todo.id}</td>
@@ -10,12 +10,15 @@ const TodoItem = ({todo}) => {
             <td>{todo.by_user}</td>
             <td>{todo.by_project}</td>
             <td>{todo.status}</td>
+            {/*<td><button type='button'>Delete</button></td>*/}
+            {/*связываем функцию с нажатием на кнопку - callback:*/}
+            <td><button onClick={() => deleteTodo(todo.id)} type='button'>Delete</button></td>
         </tr>
     )
 }
 
 
-const TodoList = ({todos}) => {
+const TodoList = ({todos, deleteTodo}) => {  // метод тоже передаем
     return (
         <table>
             <thead>
@@ -27,10 +30,11 @@ const TodoList = ({todos}) => {
                 <th>BY_USER</th>
                 <th>BY_PROJECT</th>
                 <th>STATUS</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
-            {todos.map((todo_) => <TodoItem todo={todo_}/>)}
+            {todos.map((todo_) => <TodoItem todo={todo_} deleteTodo={deleteTodo}/>)}
             </tbody>
         </table>
     )
