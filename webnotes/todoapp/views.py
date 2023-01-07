@@ -102,14 +102,21 @@ class ProjectDetailApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        """change status project"""
+        """delete project"""
         project = self.get_object(pk)
-        data = {'is_active': 0}
-        serializer = ProjectModelSerializer(project, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        projects = self.get_queryset()
+        project.delete()
+        serializer = ProjectModelSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # """change status project"""
+        # project = self.get_object(pk)
+        # data = {'is_active': 0}
+        # serializer = ProjectModelSerializer(project, data=data, partial=True)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class TodoModelViewSet(ModelViewSet):
@@ -197,13 +204,20 @@ class TodoDetailApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        """delete todo"""
         todo = self.get_object(pk)
-        data = {'status': 'CL'}
-        serializer = TodoModelSerializer(todo, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        todo.delete()
+        todos = self.get_queryset()
+        serializer = TodoModelSerializer(todos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # """change status todo"""
+        # data = {'status': 'CL'}
+        # serializer = TodoModelSerializer(todo, data=data, partial=True)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 '''

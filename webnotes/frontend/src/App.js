@@ -2,7 +2,7 @@ import React from "react";
 // import logo from './logo.svg';
 import './App.css';
 import axios from "axios";
-import {Routes, Route, BrowserRouter, Link, Navigate} from "react-router-dom";
+import {BrowserRouter, Link, Navigate, Route, Routes} from "react-router-dom";
 import Cookies from "universal-cookie";
 import TodoForm from "./components/TodoForm";
 import UserList from "./components/User";
@@ -90,6 +90,19 @@ class App extends React.Component {
             console.log(error)
             this.setState({projects: []})
         })
+    }
+
+    createTodo(name, author, project, content) {
+        const headers = this.get_headers()
+        const data = {name: name, by_user: author, by_project: project, content: content}
+        axios.post(`http://127.0.0.1:8000/api/todos/`, data, {headers})
+            .then(response => {
+                let new_todo = response.data
+                // заменим id на объект:
+                new_todo.by_user = this.state.users.filter((item) => item.id === new_todo.by_user)[0]
+                new_todo.by_project = this.state.projects.filter((item) => item.id === new_todo.by_project)[0]
+                this.setState({todos: [...this.state.todos, new_todo]})
+            }).catch(error => console.log(error))
     }
 
     load_data() {
@@ -182,7 +195,10 @@ class App extends React.Component {
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos} deleteTodo={
                             (id) => this.deleteTodo(id)}/>
                         }/>
-                        <Route exact path='/todos/create' element={<TodoForm/>}/>
+                        <Route exact path='/todos/create'
+                               element={<TodoForm
+                                   createTodo={(name, author, project, content) =>
+                                       this.createTodo(name, author, project, content)}/>}/>
 
                         <Route exact path='/login' element={<LoginForm login={(username, password) =>
                             this.login(username, password)}/>}/>
