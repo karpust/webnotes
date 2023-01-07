@@ -196,7 +196,8 @@ class App extends React.Component {
                             (id) => this.deleteTodo(id)}/>
                         }/>
                         <Route exact path='/todos/create'
-                               element={<TodoForm
+                               // добавили authors чтобы выбрать юзера из списка:
+                               element={<TodoForm authors={this.state.users} projects={this.state.projects}
                                    createTodo={(name, author, project, content) =>
                                        this.createTodo(name, author, project, content)}/>}/>
 
