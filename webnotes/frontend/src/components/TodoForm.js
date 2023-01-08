@@ -17,7 +17,7 @@ class TodoForm extends React.Component {
     handleSubmit(event) {
         // console.log(this.state.name)
         // console.log(this.state.by_user)
-        this.props.createTodo(this.state.name, this.state.by_user, this.state.by_project, this.state.content)
+        this.props.createTodo(this.state.name, this.state.author, this.state.project, this.state.content)
         event.preventDefault()
     }
 
@@ -30,7 +30,7 @@ class TodoForm extends React.Component {
                            onChange={(event) => this.handleChange(event)}/>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="by_user">author</label>
+                    <label htmlFor="author">author</label>
                     <select name="author" className="form-control" onChange={(event) => this.handleChange(event)}>
                         {this.props.authors.map((item) => <option value={item.id}>{item.username}</option>)}
                     </select>
@@ -38,7 +38,7 @@ class TodoForm extends React.Component {
                     {/*       onChange={(event) => this.handleChange(event)}/>*/}
                 </div>
                 <div className="form-group">
-                    <label htmlFor="by_project">project</label>
+                    <label htmlFor="project">project</label>
                     <select name="project" className="form-control" onChange={(event) => this.handleChange(event)}>
                         {this.props.projects.map((item) => <option value={item.id}>{item.name}</option>)}
                     </select>
@@ -46,7 +46,7 @@ class TodoForm extends React.Component {
                     {/*       onChange={(event) => this.handleChange(event)}/>*/}
                 </div>
                 <div className="form-group">
-                    <label htmlFor="text">content</label>
+                    <label htmlFor="content">content</label>
                     <input type="text" className="form-control" name="content" value={this.state.content}
                            onChange={(event) => this.handleChange(event)}/>
                 </div>
