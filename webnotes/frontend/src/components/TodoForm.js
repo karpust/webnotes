@@ -25,7 +25,7 @@ class TodoForm extends React.Component {
         return (
             <form onSubmit={(event) => this.handleSubmit(event)}>
                 <div className="form-group">
-                    <label htmlFor="login">name</label>
+                    <label htmlFor="name">name</label>
                     <input type="text" className="form-control" name="name" value={this.state.name}
                            onChange={(event) => this.handleChange(event)}/>
                 </div>

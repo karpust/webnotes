@@ -12,6 +12,7 @@ import TodosUser from "./components/TodosUser";
 import NotFound404 from "./components/NotFound404";
 import ProjectDetail from "./components/ProjectDetail";
 import LoginForm from "./components/Auth";
+import ProjectForm from "./components/ProjectForm";
 
 
 // класс App наследуем от React.Component
@@ -101,8 +102,24 @@ class App extends React.Component {
                 // заменим id на объект:
                 new_todo.by_user = this.state.users.filter((item) => item.id === new_todo.by_user)[0]
                 new_todo.by_project = this.state.projects.filter((item) => item.id === new_todo.by_project)[0]
-                this.setState({todos: [...this.state.todos, new_todo]})
+                this.setState({todos: [...this.state.todos, new_todo]}) // распаковка todos
             }).catch(error => console.log(error))
+    }
+
+    createProject(name, participants) {
+        const headers = this.get_headers()
+        const data = {name: name, users: participants}
+        axios.post(`http://127.0.0.1:8000/api/projects/`, data, {headers})
+            .then(response => {
+                this.load_data()
+            }).catch(error => {
+            console.log(error)
+            this.setState({projects: []})
+        })
+        //     let new_project = response.data
+        //     new_project.users = this.state.users.filter((item) => item.id === new_project.users)[0]
+        //     this.setState({projects: [...this.state.projects, new_project]})
+        // }).catch(error => console.log(error))
     }
 
     load_data() {
@@ -191,15 +208,17 @@ class App extends React.Component {
                             }/>
                             <Route path=':projectId' element={<ProjectDetail projects={this.state.projects}/>}/>
                         </Route>
+                        <Route exact path='/projects/create'
+                               element={<ProjectForm participants={this.state.users}
+                                                     createProject={(name, participants) => this.createProject(name, participants)}/>}/>
 
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos} deleteTodo={
-                            (id) => this.deleteTodo(id)}/>
-                        }/>
+                            (id) => this.deleteTodo(id)}/>}/>
                         <Route exact path='/todos/create'
-                               // добавили authors чтобы выбрать юзера из списка:
+                            // добавили authors чтобы выбрать юзера из списка:
                                element={<TodoForm authors={this.state.users} projects={this.state.projects}
-                                   createTodo={(name, author, project, content) =>
-                                       this.createTodo(name, author, project, content)}/>}/>
+                                                  createTodo={(name, author, project, content) =>
+                                                      this.createTodo(name, author, project, content)}/>}/>
 
                         <Route exact path='/login' element={<LoginForm login={(username, password) =>
                             this.login(username, password)}/>}/>
