@@ -130,6 +130,7 @@ urlpatterns = [
          name='redoc'),
 
     path('graphql/', GraphQLView.as_view(graphiql=True)),  # graphpl=True - показывать web-интерфейс
+    path('', TemplateView.as_view(template_name='index.html'))  # index.html тот что в build
 
 
 ]
