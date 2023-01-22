@@ -11,7 +11,7 @@ const UserItem = ({user}) => {
             <td>{user.id}</td>
             <td>
                 {/* при клике по юзеру перейдем на /users/1 */}
-                <Link to={`/users/${user.id}`}>{user.username}</Link>
+                <Link to={`${user.id}`}>{user.username}</Link>
             </td>
             <td>{user.first_name}</td>
             <td>{user.last_name}</td>
@@ -36,7 +36,7 @@ const UserList = ({users}) => {
             </tr>
             </thead>
             <tbody>
-            {users.map((user) => <UserItem user={user}/>)}
+            {users.map((user) => <UserItem key={user.id} user={user}/>)}
             </tbody>
         </table>
 

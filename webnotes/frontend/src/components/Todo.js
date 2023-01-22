@@ -37,7 +37,7 @@ const TodoList = ({todos, deleteTodo}) => {  // метод тоже переда
             </tr>
             </thead>
             <tbody>
-            {todos.map((todo_) => <TodoItem todo={todo_} deleteTodo={deleteTodo}/>)}
+            {todos.map((todo_) => <TodoItem key={todo_.id} todo={todo_} deleteTodo={deleteTodo}/>)}
             </tbody>
         </table>
             <Link to='/todos/create'>Create</Link>

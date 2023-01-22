@@ -13,7 +13,8 @@ const ProjectItem = ({project}) => {
     )
 }
 
-const ProjectDetail = ({projects}) => {
+const
+    ProjectDetail = ({projects}) => {
     let {projectId} = useParams()
     let project_detail = projects.filter((project) => project.id == projectId)
     return (
@@ -28,7 +29,7 @@ const ProjectDetail = ({projects}) => {
             </tr>
             </thead>
             <tbody>
-            {project_detail.map((project_) => <ProjectItem project={project_}/>)}
+            {project_detail.map((project_) => <ProjectItem key={project_.id} project={project_}/>)}
             </tbody>
         </table>
     )

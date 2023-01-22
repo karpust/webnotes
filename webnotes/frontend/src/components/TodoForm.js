@@ -5,7 +5,7 @@ class TodoForm extends React.Component {
     constructor(props) {
         super(props)
         // by_user: props.authors[0].id - первый элем выпадающего списка
-        this.state = {name: '', by_user: props.authors[0].id, by_project: props.projects[0].id, content: ''}
+        this.state = {name: '', author: props.authors[0].id, project: props.projects[0].id, content: ''}
     }
 
     handleChange(event) {
@@ -32,7 +32,7 @@ class TodoForm extends React.Component {
                 <div className="form-group">
                     <label htmlFor="author">author</label>
                     <select name="author" className="form-control" onChange={(event) => this.handleChange(event)}>
-                        {this.props.authors.map((item) => <option value={item.id}>{item.username}</option>)}
+                        {this.props.authors.map((item) => <option key={item.id} value={item.id}>{item.username}</option>)}
                     </select>
                     {/*<input type="number" className="form-control" name="by_user" value={this.state.by_user}*/}
                     {/*       onChange={(event) => this.handleChange(event)}/>*/}
@@ -40,7 +40,7 @@ class TodoForm extends React.Component {
                 <div className="form-group">
                     <label htmlFor="project">project</label>
                     <select name="project" className="form-control" onChange={(event) => this.handleChange(event)}>
-                        {this.props.projects.map((item) => <option value={item.id}>{item.name}</option>)}
+                        {this.props.projects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                     </select>
                     {/*<input type="number" className="form-control" name="by_project" value={this.state.by_project}*/}
                     {/*       onChange={(event) => this.handleChange(event)}/>*/}

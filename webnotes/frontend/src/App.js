@@ -106,9 +106,9 @@ class App extends React.Component {
             }).catch(error => console.log(error))
     }
 
-    createProject(name, participants) {
+    createProject(name, participants, repo_url, is_active) {
         const headers = this.get_headers()
-        const data = {name: name, users: participants}
+        const data = {name: name, users: participants, repo_url: repo_url, is_active: is_active}
         axios.post(`http://127.0.0.1:8000/api/projects/`, data, {headers})
             .then(response => {
                 this.load_data()
@@ -120,6 +120,18 @@ class App extends React.Component {
         //     new_project.users = this.state.users.filter((item) => item.id === new_project.users)[0]
         //     this.setState({projects: [...this.state.projects, new_project]})
         // }).catch(error => console.log(error))
+    }
+
+    updateProject(id, name, participants, repo_url, is_active) {
+        const headers = this.get_headers()
+        const data = {id: id, name: name, users: participants, repo_url: repo_url, is_active: is_active}
+        axios.put(`http://127.0.0.1:8000/api/projects/${id}/`, data, {headers})
+            .then(response => {
+                this.load_data()
+            }).catch(error => {
+            console.log(error)
+            this.setState({projects: []})
+        })
     }
 
     load_data() {
@@ -180,17 +192,17 @@ class App extends React.Component {
                         <ul>{this.state.auth.username}</ul>
                         <li>
                             {/*Link - компонент как тэг <a> но не передает запрос на сервер */}
-                            <Link to='/'>Users</Link>
+                            <Link to=''>Users</Link>
                         </li>
                         <li>
-                            <Link to='/projects'>Projects</Link>
+                            <Link to='projects'>Projects</Link>
                         </li>
                         <li>
-                            <Link to='/todos'>Todos</Link>
+                            <Link to='todos'>Todos</Link>
                         </li>
                         <li>
                             {this.state.auth.is_login ? <button onClick={() => this.logout()}>Выйти</button> :
-                                <Link to='/login'>Войти</Link>
+                                <Link to='login'>Войти</Link>
                             }
                         </li>
                     </nav>
@@ -204,13 +216,18 @@ class App extends React.Component {
 
                         <Route path='/projects'>
                             <Route index element={<ProjectList projects={this.state.projects} deleteProject={
-                                (id) => this.deleteProject(id)}/>
-                            }/>
+                                (id) => this.deleteProject(id)}/>}/>
                             <Route path=':projectId' element={<ProjectDetail projects={this.state.projects}/>}/>
+                            <Route path=':projectId/update'
+                                   element={<ProjectForm participants={this.state.users}
+                                                         updateProject={(id, name, participants, repo_url, is_active) =>
+                                                             this.updateProject(id, name, participants, repo_url, is_active)}/>}/>
                         </Route>
                         <Route exact path='/projects/create'
                                element={<ProjectForm participants={this.state.users}
-                                                     createProject={(name, participants) => this.createProject(name, participants)}/>}/>
+                                                     createProject={(name, participants, repo_url, is_active) =>
+                                                         this.createProject(name, participants, repo_url, is_active)}/>}/>
+
 
                         <Route exact path='/todos' element={<TodoList todos={this.state.todos} deleteTodo={
                             (id) => this.deleteTodo(id)}/>}/>
