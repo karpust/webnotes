@@ -1,20 +1,20 @@
 [
   {
-    "pk": 1,
+    "pk": 2,
     "username": "Сема2",
     "first_name": "Семен",
     "last_name": "Семенычев",
     "email": "202sem@mail.ru"
   },
   {
-    "pk": 2,
+    "pk": 3,
     "username": "Вася2",
     "first_name": "Василий",
     "last_name": "Васильев",
     "email": "111@mail.ru"
   },
   {
-    "pk": 3,
+    "pk": 4,
     "username": "Петрос2",
     "first_name": "Петр",
     "last_name": "Петров",

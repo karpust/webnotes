@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    privileged: true
+#    expose:
+#      - "5433"  # Publishes 5433 to other containers but NOT to host machine
+    ports:
+      - "5432:5433"  # postgres is running on port 5432 in the container and need to expose it on the host on 5433
+    environment:
+      POSTGRES_USER: n
+      POSTGRES_PASSWORD: n12345
+      POSTGRES_DB: webnotes_db
+#    command:
+#      -p 5433  # actually change the port Postgres is running on
+  backend:
+    build:
+      context: . # в корне один докерфайл
+    ports:
+      - "8080:8080"  # хост : контейнер
+    command: bash -c "./wait-for-postgres.sh db
+      && python manage.py migrate
+      && python manage.py fill_users
+      && python manage.py runserver 0.0.0.0:8080
+      && gunicorn webnotes.wsgi -b 0.0.0.0:8080
+      "
+    depends_on:
+      - db

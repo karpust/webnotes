@@ -93,9 +93,17 @@ WSGI_APPLICATION = 'webnotes.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'webnotes_db',
+        'USER': 'n',
+        'PASSWORD': 'n12345',
+        'HOST': 'db',  # это хост, на кот находится контейнер с базой данных
+        'PORT': '5432',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 
